@@ -94,5 +94,3 @@ O sistema modela um cenário simplificado de negócio, envolvendo **clientes, pr
 ### Ambiente de Execução
 - Compilação e execução via **terminal**
 - Desenvolvimento e análise do código utilizando **Visual Studio Code**
-- Compilação e execução via **terminal**
-- Desenvolvimento e análise do código utilizando **Visual Studio Code**
