@@ -9,7 +9,7 @@ typedef struct Cliente {
     struct Cliente *proximo;
 } Cliente;
 
-// structs.c
+//structs.c gerenciamento de produto
 typedef struct Produto {
     int id;
     char nome[50];
@@ -18,8 +18,6 @@ typedef struct Produto {
     struct Produto *proximo;
 
 } Produto;
-
-//structs.c gerenciamento de produto
 
 // structs.c
 typedef struct Produto {
