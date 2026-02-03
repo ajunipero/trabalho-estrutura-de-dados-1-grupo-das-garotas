@@ -23,6 +23,14 @@ typedef struct Produto {
     struct Produto *prox;    
 } Produto;
 
+typedef struct Compra {
+    int id;
+    char nome[50];
+    float preco;
+    int quantidade;
+    struct Compra *proximo;
+} Compra;
+
 /*  PROTÓTIPOS DAS FUNÇÕES */
 
 // Utilitários
@@ -47,15 +55,15 @@ int codigoExiste(Produto *lista, int codigo);
 Produto* removerProduto(Produto *lista, int codigo);
 
 // Carrinho
-void adicionar_carrinho(Produto **topo);
-void listar_carrinho(Produto *topo);
-void remover_carrinho(Produto **topo);
-void limpar_carrinho(Produto **topo);
+void adicionar_carrinho(Compra **topo);
+void listar_carrinho(Compra *topo);
+void remover_carrinho(Compra **topo);
+void limpar_carrinho(Compra **topo);
 
 // Menus
 void menu_clientes(Cliente **listaClientes);
 void menu_produtos(Produto **listaProdutos);
-void menu_carrinho(Produto **carrinho);
+void menu_carrinho(Compra **carrinho);
 
 /* IMPLEMENTAÇÃO DAS FUNÇÕES UTILITÁRIAS */
 
@@ -251,57 +259,76 @@ Produto* removerProduto(Produto *lista, int codigo) {
 
 /*  GESTÃO DO CARRINHO */
 
-void adicionar_carrinho(Produto **topo) {
-    Produto *novo = (Produto*) malloc(sizeof(Produto));
-    printf("\nNome do item: "); ler_string(novo->nome, sizeof(novo->nome));
-    printf("Preco: "); scanf("%f", &novo->preco);
-    printf("Quantidade: "); scanf("%d", &novo->quantidade);
+void adicionar_carrinho(Compra **topo) {
+    Compra *novo = malloc(sizeof(Compra));
+
+    printf("\nNome do item: ");
+    ler_string(novo->nome, sizeof(novo->nome));
+
+    printf("Preco: ");
+    scanf("%f", &novo->preco);
+
+    printf("Quantidade: ");
+    scanf("%d", &novo->quantidade);
     limpar_buffer_entrada();
+
     novo->proximo = *topo;
-    novo->prox = NULL;
     *topo = novo;
+
     printf("Item adicionado ao carrinho!\n");
 }
 
-void listar_carrinho(Produto *topo) {
+void listar_carrinho(Compra *topo) {
     float total = 0;
+
     if (!topo) {
-        printf("\nO carrinho esta vazio.\n");
+        printf("\nCarrinho vazio.\n");
     } else {
-        printf("\n--- ITENS NO CARRINHO ---\n");
+        printf("\n--- CARRINHO ---\n");
         while (topo) {
-            printf("%s - %d x R$ %.2f (Subtotal: R$ %.2f)\n", 
-                   topo->nome, topo->quantidade, topo->preco, (topo->preco * topo->quantidade));
-            total += (topo->preco * topo->quantidade);
+            float sub = topo->preco * topo->quantidade;
+            printf("%s | %d x %.2f = %.2f\n",
+                   topo->nome, topo->quantidade, topo->preco, sub);
+            total += sub;
             topo = topo->proximo;
         }
-        printf("--------------------------\n");
-        printf("TOTAL DA COMPRA: R$ %.2f\n", total);
+        printf("TOTAL: R$ %.2f\n", total);
     }
     pausar_tela();
 }
 
-void remover_carrinho(Produto **topo) {
+void remover_carrinho(Compra **topo) {
     char nome[100];
-    printf("\nDigite o nome do item para remover do carrinho: "); 
+
+    printf("\nDigite o nome do item para remover do carrinho: ");
     ler_string(nome, sizeof(nome));
-    Produto *atual = *topo, *ant = NULL;
-    while (atual && strcmp(atual->nome, nome) != 0) {
+
+    Compra *atual = *topo;
+    Compra *ant = NULL;
+
+    while (atual != NULL && strcmp(atual->nome, nome) != 0) {
         ant = atual;
         atual = atual->proximo;
     }
-    if (atual) {
-        if (!ant) *topo = atual->proximo;
-        else ant->proximo = atual->proximo;
+
+    if (atual != NULL) {
+        if (ant == NULL) {
+            *topo = atual->proximo;
+        } else {
+            ant->proximo = atual->proximo;
+        }
         free(atual);
         printf("Item removido do carrinho!\n");
-    } else printf("Item nao encontrado no carrinho.\n");
+    } else {
+        printf("Item nao encontrado no carrinho.\n");
+    }
+
     pausar_tela();
 }
 
-void limpar_carrinho(Produto **topo) {
-    while (*topo) {
-        Produto *prox = (*topo)->proximo;
+void limpar_carrinho(Compra **topo) {
+    while (*topo != NULL) {
+        Compra *prox = (*topo)->proximo;
         free(*topo);
         *topo = prox;
     }
@@ -356,24 +383,29 @@ void menu_produtos(Produto **lista) {
     } while(op != 0);
 }
 
-void menu_carrinho(Produto **carro) {
+void menu_carrinho(Compra **carrinho) {
     int op;
     do {
-        printf("\n--- CARRINHO DE COMPRAS ---");
-        printf("\n1. Adicionar Item");
-        printf("\n2. Visualizar Carrinho");
-        printf("\n3. Remover Item");
-        printf("\n0. Finalizar e Sair do Carrinho");
-        printf("\nEscolha: ");
-        if (scanf("%d", &op) != 1) { limpar_buffer_entrada(); continue; }
-        limpar_buffer_entrada();
-        switch(op) {
-            case 1: adicionar_carrinho(carro); break;
-            case 2: listar_carrinho(*carro); break;
-            case 3: remover_carrinho(carro); break;
-            case 0: limpar_carrinho(carro); printf("Carrinho finalizado.\n"); break;
+        printf("\n--- CARRINHO ---");
+        printf("\n1. Adicionar");
+        printf("\n2. Listar");
+        printf("\n3. Remover");
+        printf("\n0. Finalizar");
+        printf("\nOpcao: ");
+
+        if (scanf("%d", &op) != 1) {
+            limpar_buffer_entrada();
+            continue;
         }
-    } while(op != 0);
+        limpar_buffer_entrada();
+
+        switch(op) {
+            case 1: adicionar_carrinho(carrinho); break;
+            case 2: listar_carrinho(*carrinho); break;
+            case 3: remover_carrinho(carrinho); break;
+            case 0: limpar_carrinho(carrinho); break;
+        }
+    } while (op != 0);
 }
 
 /* MAIN */
@@ -381,7 +413,7 @@ void menu_carrinho(Produto **carro) {
 int main() {
     Cliente *lClientes = NULL;
     Produto *lProdutos = NULL;
-    Produto *carrinho = NULL;
+    Compra *carrinho = NULL;
     int op;
 
     do {

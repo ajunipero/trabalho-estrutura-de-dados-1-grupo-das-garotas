@@ -1,5 +1,3 @@
-// funcoes.h menu de clientes
-
 #ifndef FUNCOES_H
 #define FUNCOES_H
 
@@ -8,13 +6,13 @@
 #include <string.h>
 #include "structs.c"
 
-/* ========= FUNÇÕES UTILITÁRIAS ========= */
+/* ========= UTILITÁRIOS ========= */
 void limpar_buffer_entrada(void);
 void ler_string(char *buffer, int tamanho);
 int validar_cpf(const char *cpf);
 void pausar_tela(void);
 
-/* ========= CRUD DE CLIENTES ========= */
+/* ========= CLIENTES ========= */
 Cliente* cadastrar_cliente(Cliente *listaClientes);
 void listar_clientes(Cliente *listaClientes);
 Cliente* buscar_cliente(Cliente *listaClientes, const char *cpf);
@@ -22,28 +20,22 @@ void editar_cliente(Cliente *listaClientes);
 Cliente* remover_cliente(Cliente *listaClientes);
 void liberar_clientes(Cliente *listaClientes);
 
-// funcoes.h 
-void adicionar(Produto **topo);
-void listar(Produto *topo);
-void remover(Produto **topo);
-void limparCarrinho(Produto **topo);
-
-#endif
-
-//funcoes.n gerenciamento de produtos
-
-#ifndef FUNCOES_H
-#define FUNCOES_H
-
-#include "structs.h"
-
+/* ========= PRODUTOS ========= */
 Produto* cadastrarProduto(Produto *lista);
 void imprimirProdutos(Produto *lista);
 Produto* buscarProduto(Produto *lista, int codigo);
 int codigoExiste(Produto *lista, int codigo);
 Produto* removerProduto(Produto *lista, int codigo);
 
+/* ========= CARRINHO ========= */
+void adicionar_carrinho(Compra **topo);
+void listar_carrinho(Compra *topo);
+void remover_carrinho(Compra **topo);
+void limpar_carrinho(Compra **topo);
+
+/* ========= MENUS ========= */
+void menu_clientes(Cliente **listaClientes);
+void menu_produtos(Produto **listaProdutos);
+void menu_carrinho(Compra **carrinho);
+
 #endif
-
-
-
