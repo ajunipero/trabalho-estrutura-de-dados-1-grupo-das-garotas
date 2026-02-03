@@ -1,4 +1,4 @@
-// funcoes.h — Menu de Clientes e Produtos
+// funcoes.h menu de clientes
 
 #ifndef FUNCOES_H
 #define FUNCOES_H
@@ -22,10 +22,11 @@ void editar_cliente(Cliente *listaClientes);
 Cliente* remover_cliente(Cliente *listaClientes);
 void liberar_clientes(Cliente *listaClientes);
 
-/* ========= FUNÇÕES DE PRODUTO / CARRINHO ========= */
+// funcoes.h 
 void adicionar(Produto **topo);
 void listar(Produto *topo);
 void remover(Produto **topo);
 void limparCarrinho(Produto **topo);
 
 #endif 
+
