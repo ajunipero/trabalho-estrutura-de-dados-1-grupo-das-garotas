@@ -1,3 +1,14 @@
+// STRUCTS MENU DE CLIENTES
+
+typedef struct Cliente {
+    char cpf[15];
+    char nome[100];
+    char email[100];
+    char telefone[15];
+    char dataNascimento[11];
+    struct Cliente *proximo;
+} Cliente;
+
 // structs.c
 typedef struct Produto {
     int id;
@@ -22,3 +33,4 @@ typedef struct Produto {
 } Produto;
 
 #endif
+
