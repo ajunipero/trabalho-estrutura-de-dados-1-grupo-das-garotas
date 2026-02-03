@@ -190,11 +190,11 @@ void menu_carrinho(Compra **carrinho) {
         limpar_buffer_entrada();
 
         switch(opcao) {
-            case 1: adicionar(carrinho); break;
-            case 2: listar(*carrinho); break;
-            case 3: remover(carrinho); break;
-            case 0: limparCarrinho(carrinho); break;
-            default: printf("Opcao invalida!\n"); pausar_tela();
+           case 1: adicionar_carrinho(carrinho); break;
+           case 2: listar_carrinho(*carrinho); break;
+           case 3: remover_carrinho(carrinho); break;
+           case 0: limpar_carrinho(carrinho); break;
+           default: printf("Opcao invalida!\n"); pausar_tela();
         }
     } while(opcao != 0);
 }
