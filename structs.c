@@ -21,9 +21,6 @@ typedef struct Produto {
 
 //structs.c gerenciamento de produto
 
-#ifndef STRUCTS_H
-#define STRUCTS_H
-
 // structs.c
 typedef struct Produto {
     int id;
