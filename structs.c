@@ -24,14 +24,16 @@ typedef struct Produto {
 #ifndef STRUCTS_H
 #define STRUCTS_H
 
+// structs.c
+#ifndef STRUCTS_C
+#define STRUCTS_C
+
 typedef struct Produto {
-    int codigo;
+    int id;
     char nome[50];
     float preco;
     int quantidade;
-    struct Produto *prox;
+    struct Produto *proximo; // struct sem erro
 } Produto;
 
 #endif
-
-
