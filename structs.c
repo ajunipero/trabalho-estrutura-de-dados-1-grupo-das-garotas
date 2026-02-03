@@ -11,12 +11,11 @@ typedef struct Cliente {
 
 //structs.c gerenciamento de produto
 typedef struct Produto {
-    int id;
+    int codigo;
     char nome[50];
     float preco;
     int quantidade;
-    struct Produto *proximo;
-
+    struct Produto *prox;
 } Produto;
 
 // structs.c
