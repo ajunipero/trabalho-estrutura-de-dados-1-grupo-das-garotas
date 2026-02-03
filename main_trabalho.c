@@ -2,7 +2,6 @@
 #include <stdlib.h>
 #include <string.h>
 
-// Estrutura do nó da lista
 typedef struct Produto {
     int id;
     char nome[50];
@@ -11,14 +10,13 @@ typedef struct Produto {
     struct Produto *proximo;
 } Produto;
 
-// Protótipos das funções (Passagem por parâmetros)
 void adicionar(Produto **topo);
 void listar(Produto *topo);
 void remover(Produto **topo);
 void limparCarrinho(Produto **topo);
 
 int main() {
-    Produto *carrinho = NULL; // Variável local (proibido global)
+    Produto *carrinho = NULL; 
     int opcao;
 
     do {
@@ -53,7 +51,6 @@ void adicionar(Produto **topo) {
     printf("Quantidade: ");
     scanf("%d", &novo->quantidade);
     
-    // Inserção no início (mais simples em lista encadeada)
     novo->proximo = *topo;
     *topo = novo;
     printf("Produto adicionado com sucesso!\n");
@@ -103,13 +100,13 @@ void remover(Produto **topo) {
         return;
     }
 
-    if (anterior == NULL) { // Remove o primeiro da lista
+    if (anterior == NULL) { 
         *topo = atual->proximo;
-    } else { // Remove do meio ou fim
+    } else { 
         anterior->proximo = atual->proximo;
     }
 
-    free(atual); // Importante: Liberação de memória!
+    free(atual); 
     printf("Produto removido!\n");
 }
 
