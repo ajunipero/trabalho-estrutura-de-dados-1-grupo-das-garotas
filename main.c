@@ -73,7 +73,7 @@ void menu_produtos(Produto **listaProdutos) {
 
     do {
         printf("\n--- GERENCIAMENTO DE PRODUTOS ---\n");
-        printf("1. Cadastrar Produtos\n");
+        printf("1. Cadastrar Produto\n");
         printf("2. Listar Produtos\n");
         printf("3. Buscar Produto\n");
         printf("4. Editar Produto\n");
@@ -90,13 +90,7 @@ void menu_produtos(Produto **listaProdutos) {
         switch (opcao) {
 
         case 1:
-            printf("\nDigite os dados do produto (digite 'fim' no nome para encerrar):\n");
-            while (1) {
-                Produto *antes = *listaProdutos;
-                *listaProdutos = cadastrarProduto(*listaProdutos);
-                if (*listaProdutos == antes)
-                    break;
-            }
+            *listaProdutos = cadastrarProduto(*listaProdutos);
             break;
 
         case 2:
@@ -171,6 +165,7 @@ void menu_produtos(Produto **listaProdutos) {
 
     } while (opcao != 0);
 }
+
 
 /* --- MENU DO CARRINHO --- */
 void menu_carrinho(Compra **carrinho) {
