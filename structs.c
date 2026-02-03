@@ -1,4 +1,4 @@
-// STRUCTS MENU DE CLIENTES
+// structs.c menu de clientes
 
 typedef struct Cliente {
     char cpf[15];
@@ -33,4 +33,5 @@ typedef struct Produto {
 } Produto;
 
 #endif
+
 
