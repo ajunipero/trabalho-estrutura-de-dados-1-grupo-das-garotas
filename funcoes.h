@@ -28,5 +28,22 @@ void listar(Produto *topo);
 void remover(Produto **topo);
 void limparCarrinho(Produto **topo);
 
-#endif 
+#endif
+
+//funcoes.n gerenciamento de produtos
+
+#ifndef FUNCOES_H
+#define FUNCOES_H
+
+#include "structs.h"
+
+Produto* cadastrarProduto(Produto *lista);
+void imprimirProdutos(Produto *lista);
+Produto* buscarProduto(Produto *lista, int codigo);
+int codigoExiste(Produto *lista, int codigo);
+Produto* removerProduto(Produto *lista, int codigo);
+
+#endif
+
+
 
