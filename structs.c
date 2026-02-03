@@ -25,15 +25,10 @@ typedef struct Produto {
 #define STRUCTS_H
 
 // structs.c
-#ifndef STRUCTS_C
-#define STRUCTS_C
-
 typedef struct Produto {
     int id;
     char nome[50];
     float preco;
     int quantidade;
-    struct Produto *proximo; // struct sem erro
+    struct Produto *proximo;
 } Produto;
-
-#endif
