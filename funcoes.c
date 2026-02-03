@@ -80,4 +80,131 @@ void limparCarrinho(Produto **topo) {
     }
     *topo = NULL;
     printf("Memoria liberada. Saindo...\n");
+
+}
+
+//funcoes.c gerenciamento de produtos 
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include "funcoes.h"
+
+Produto* cadastrarProduto(Produto *lista) {
+   Produto *novo = malloc(sizeof(Produto)); 
+
+   printf("Nome: "); 
+   scanf(" %[^\n]", novo->nome);
+
+   if (strcmp(novo->nome, "fim") == 0) {
+    free(novo);
+    return lista;
+   }
+
+int existe;
+
+do {
+    printf("Codigo: ");
+    scanf("%d", &novo->codigo);
+
+    existe = codigoExiste(lista, novo->codigo);
+
+    if (existe) {
+        printf("Codigo ja cadastrado! Digite outro.\n");
+    }
+
+} while (existe);
+
+
+
+   printf("Preco: "); 
+   scanf("%f", &novo->preco);
+
+   printf("Quantidade: "); 
+   scanf("%d", &novo->quantidade);
+
+   novo->prox = lista; 
+   return novo;
+
+}
+
+void imprimirProdutos(Produto *lista) {
+    Produto *aux = lista;
+
+    if (aux == NULL) {
+        printf("\nNenhum produto cadastrado.\n");
+    return;
+
+    }
+
+    printf("\n--- PRODUTOS CADASTRADOS ---\n");
+
+    while (aux != NULL) {
+        printf("Codigo: %d\n", aux->codigo);
+        printf("Nome: %s\n", aux->nome);
+        printf("Preco: %.2f\n", aux->preco);
+        printf("Quantidade: %d\n\n", aux->quantidade);
+
+        aux = aux->prox;
+    }
+
+}
+
+Produto* buscarProduto(Produto *lista, int codigo) {
+    Produto *aux = lista;
+
+    while (aux != NULL) {
+        if (aux->codigo == codigo) {
+            return aux;   
+        }
+        aux = aux->prox;
+    }
+
+    return NULL; 
+}
+
+int codigoExiste(Produto *lista, int codigo) {
+    Produto *aux = lista;
+
+    while (aux != NULL) {
+        if (aux->codigo == codigo) {
+            return 1; 
+        }
+        aux = aux->prox;
+    }
+
+    return 0; 
+}
+
+Produto* removerProduto(Produto *lista, int codigo) {
+    Produto *atual = lista;
+    Produto *anterior = NULL;
+
+    if (lista == NULL) {
+        printf("\nLista vazia.\n");
+        return lista;
+    }
+
+    if (atual->codigo == codigo) {
+        lista = atual->prox;
+        free(atual);
+        printf("\nProduto removido com sucesso!\n");
+        return lista;
+    }
+
+    while (atual != NULL && atual->codigo != codigo) {
+        anterior = atual;
+        atual = atual->prox;
+    }
+
+    if (atual == NULL) {
+        printf("\nProduto nao encontrado.\n");
+        return lista;
+    }
+
+    anterior->prox = atual->prox;
+    free(atual);
+
+    printf("\nProduto removido com sucesso!\n");
+    return lista;
 }
