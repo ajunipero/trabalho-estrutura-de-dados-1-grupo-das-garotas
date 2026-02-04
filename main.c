@@ -27,13 +27,16 @@ void menu_clientes(Cliente **listaClientes) {
             case 1:
                 *listaClientes = cadastrar_cliente(*listaClientes);
                 break;
+
             case 2:
                 listar_clientes(*listaClientes);
                 break;
+
             case 3: {
-                char cpfBusca[15]; // Atualizado de 12 para 15
+                char cpfBusca[15];
                 printf("Digite o CPF do cliente a buscar: ");
                 ler_string(cpfBusca, sizeof(cpfBusca));
+
                 Cliente *clienteEncontrado = buscar_cliente(*listaClientes, cpfBusca);
                 if (clienteEncontrado != NULL) {
                     printf("\nCliente Encontrado:\n");
@@ -48,19 +51,22 @@ void menu_clientes(Cliente **listaClientes) {
                 pausar_tela();
                 break;
             }
+
             case 4:
                 editar_cliente(*listaClientes);
                 break;
+
             case 5:
                 *listaClientes = remover_cliente(*listaClientes);
                 break;
+
             case 0:
                 printf("Voltando ao Menu Principal...\n");
                 break;
+
             default:
                 printf("Opcao invalida. Tente novamente.\n");
                 pausar_tela();
-                break;
         }
     } while (opcao != 0);
 }
@@ -94,8 +100,7 @@ void menu_produtos(Produto **listaProdutos) {
             break;
 
         case 2:
-            imprimirProdutos(*listaProdutos);
-            pausar_tela();
+            imprimirProdutos(*listaProdutos); // ← pausa já ocorre na função
             break;
 
         case 3:
@@ -166,7 +171,6 @@ void menu_produtos(Produto **listaProdutos) {
     } while (opcao != 0);
 }
 
-
 /* --- MENU DO CARRINHO --- */
 void menu_carrinho(Compra **carrinho) {
     int opcao;
@@ -184,14 +188,24 @@ void menu_carrinho(Compra **carrinho) {
         }
         limpar_buffer_entrada();
 
-        switch(opcao) {
-           case 1: adicionar_carrinho(carrinho); break;
-           case 2: listar_carrinho(*carrinho); break;
-           case 3: remover_carrinho(carrinho); break;
-           case 0: limpar_carrinho(carrinho); break;
-           default: printf("Opcao invalida!\n"); pausar_tela();
+        switch (opcao) {
+            case 1:
+                adicionar_carrinho(carrinho);
+                break;
+            case 2:
+                listar_carrinho(*carrinho);
+                break;
+            case 3:
+                remover_carrinho(carrinho);
+                break;
+            case 0:
+                limpar_carrinho(carrinho);
+                break;
+            default:
+                printf("Opcao invalida!\n");
+                pausar_tela();
         }
-    } while(opcao != 0);
+    } while (opcao != 0);
 }
 
 /* --- FUNÇÃO PRINCIPAL --- */
@@ -231,11 +245,9 @@ int main() {
             default:
                 printf("Opcao invalida. Tente novamente.\n");
                 pausar_tela();
-                break;
         }
     } while (opcao != 0);
 
     liberar_clientes(listaClientes);
-    
     return 0;
 }
