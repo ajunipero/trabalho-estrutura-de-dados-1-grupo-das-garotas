@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 
-/*  ESTRUTURAS DE DADOS */
+/* ================= ESTRUTURAS ================= */
 
 typedef struct Cliente {
     char cpf[15];
@@ -19,53 +19,17 @@ typedef struct Produto {
     char nome[100];
     float preco;
     int quantidade;
-    struct Produto *proximo; 
-    struct Produto *prox;    
+    struct Produto *prox;
 } Produto;
 
 typedef struct Compra {
-    int id;
     char nome[50];
     float preco;
     int quantidade;
     struct Compra *proximo;
 } Compra;
 
-/*  PROTÓTIPOS DAS FUNÇÕES */
-
-// Utilitários
-void limpar_buffer_entrada();
-void ler_string(char *buffer, int tamanho);
-void pausar_tela();
-int validar_cpf(const char *cpf);
-
-// Clientes
-Cliente* cadastrar_cliente(Cliente *listaClientes);
-void listar_clientes(Cliente *listaClientes);
-Cliente* buscar_cliente(Cliente *listaClientes, const char *cpf);
-void editar_cliente(Cliente *listaClientes);
-Cliente* remover_cliente(Cliente *listaClientes);
-void liberar_clientes(Cliente *listaClientes);
-
-// Produtos
-Produto* cadastrarProduto(Produto *lista);
-void imprimirProdutos(Produto *lista);
-Produto* buscarProduto(Produto *lista, int codigo);
-int codigoExiste(Produto *lista, int codigo);
-Produto* removerProduto(Produto *lista, int codigo);
-
-// Carrinho
-void adicionar_carrinho(Compra **topo);
-void listar_carrinho(Compra *topo);
-void remover_carrinho(Compra **topo);
-void limpar_carrinho(Compra **topo);
-
-// Menus
-void menu_clientes(Cliente **listaClientes);
-void menu_produtos(Produto **listaProdutos);
-void menu_carrinho(Compra **carrinho);
-
-/* IMPLEMENTAÇÃO DAS FUNÇÕES UTILITÁRIAS */
+/* ================= UTILITÁRIOS ================= */
 
 void limpar_buffer_entrada() {
     int c;
@@ -73,10 +37,8 @@ void limpar_buffer_entrada() {
 }
 
 void ler_string(char *buffer, int tamanho) {
-    if (fgets(buffer, tamanho, stdin) != NULL) {
+    if (fgets(buffer, tamanho, stdin)) {
         buffer[strcspn(buffer, "\n")] = '\0';
-    } else {
-        buffer[0] = '\0';
     }
 }
 
@@ -86,110 +48,138 @@ void pausar_tela() {
 }
 
 int validar_cpf(const char *cpf) {
-    int cont = 0;
-    while (cpf[cont] != '\0') {
-        if (!isdigit(cpf[cont])) return 0;
-        cont++;
-    }
-    return (cont == 11);
+    int i;
+    if (strlen(cpf) != 11) return 0;
+    for (i = 0; i < 11; i++)
+        if (!isdigit(cpf[i])) return 0;
+    return 1;
 }
 
-/*  GESTÃO DE CLIENTES */
+/* ================= CLIENTES ================= */
 
-Cliente* buscar_cliente(Cliente *listaClientes, const char *cpf) {
-    Cliente *atual = listaClientes;
-    while (atual != NULL) {
-        if (strcmp(atual->cpf, cpf) == 0) return atual;
-        atual = atual->proximo;
+Cliente* buscar_cliente(Cliente *lista, const char *cpf) {
+    while (lista) {
+        if (strcmp(lista->cpf, cpf) == 0)
+            return lista;
+        lista = lista->proximo;
     }
     return NULL;
 }
 
-Cliente* cadastrar_cliente(Cliente *listaClientes) {
-    Cliente *novo = (Cliente*) malloc(sizeof(Cliente));
-    if (!novo) return listaClientes;
+Cliente* cadastrar_cliente(Cliente *lista) {
+    Cliente *novo = malloc(sizeof(Cliente));
+    if (!novo) return lista;
 
     printf("\n--- CADASTRAR CLIENTE ---\n");
+
     do {
-        printf("CPF (apenas 11 digitos): ");
+        printf("CPF (11 digitos): ");
         ler_string(novo->cpf, sizeof(novo->cpf));
-        if (!validar_cpf(novo->cpf)) printf("Erro: CPF deve conter exatamente 11 numeros.\n");
+        if (!validar_cpf(novo->cpf))
+            printf("CPF invalido!\n");
     } while (!validar_cpf(novo->cpf));
 
     printf("Nome: ");
     ler_string(novo->nome, sizeof(novo->nome));
+
     printf("Email: ");
     ler_string(novo->email, sizeof(novo->email));
+
     printf("Telefone: ");
     ler_string(novo->telefone, sizeof(novo->telefone));
+
     printf("Data de Nascimento: ");
     ler_string(novo->dataNascimento, sizeof(novo->dataNascimento));
 
-    novo->proximo = listaClientes;
+    novo->proximo = lista;
+
     printf("\nCliente cadastrado com sucesso!\n");
     pausar_tela();
     return novo;
 }
 
-void listar_clientes(Cliente *listaClientes) {
-    Cliente *atual = listaClientes;
-    if (!atual) {
+void listar_clientes(Cliente *lista) {
+    if (!lista) {
         printf("\nNenhum cliente cadastrado.\n");
     } else {
         printf("\n--- LISTA DE CLIENTES ---\n");
-        while (atual) {
-            printf("CPF: %s | Nome: %s | Email: %s\n", atual->cpf, atual->nome, atual->email);
-            atual = atual->proximo;
+        while (lista) {
+            printf(
+                "CPF: %s | Nome: %s | Email: %s | Telefone: %s | Data Nasc.: %s\n",
+                lista->cpf,
+                lista->nome,
+                lista->email,
+                lista->telefone,
+                lista->dataNascimento
+            );
+            lista = lista->proximo;
         }
     }
     pausar_tela();
 }
 
-void editar_cliente(Cliente *listaClientes) {
+void editar_cliente(Cliente *lista) {
     char cpf[15];
     printf("\nDigite o CPF para editar: ");
     ler_string(cpf, sizeof(cpf));
-    Cliente *c = buscar_cliente(listaClientes, cpf);
-    if (c) {
-        printf("Novo Nome: "); ler_string(c->nome, sizeof(c->nome));
-        printf("Novo Email: "); ler_string(c->email, sizeof(c->email));
-        printf("Cliente atualizado com sucesso!\n");
-    } else {
+
+    Cliente *c = buscar_cliente(lista, cpf);
+    if (!c) {
         printf("Cliente nao encontrado.\n");
+        pausar_tela();
+        return;
     }
+
+    printf("Novo Nome: ");
+    ler_string(c->nome, sizeof(c->nome));
+
+    printf("Novo Email: ");
+    ler_string(c->email, sizeof(c->email));
+
+    printf("Novo Telefone: ");
+    ler_string(c->telefone, sizeof(c->telefone));
+
+    printf("Nova Data de Nascimento: ");
+    ler_string(c->dataNascimento, sizeof(c->dataNascimento));
+
+    printf("\nCliente atualizado com sucesso!\n");
     pausar_tela();
 }
 
-Cliente* remover_cliente(Cliente *listaClientes) {
+Cliente* remover_cliente(Cliente *lista) {
     char cpf[15];
     printf("\nDigite o CPF para remover: ");
     ler_string(cpf, sizeof(cpf));
-    Cliente *atual = listaClientes, *ant = NULL;
+
+    Cliente *atual = lista, *ant = NULL;
+
     while (atual && strcmp(atual->cpf, cpf) != 0) {
         ant = atual;
         atual = atual->proximo;
     }
-    if (atual) {
-        if (!ant) listaClientes = atual->proximo;
+
+    if (!atual) {
+        printf("Cliente nao encontrado.\n");
+    } else {
+        if (!ant) lista = atual->proximo;
         else ant->proximo = atual->proximo;
         free(atual);
         printf("Cliente removido com sucesso!\n");
-    } else {
-        printf("Cliente nao encontrado.\n");
     }
+
     pausar_tela();
-    return listaClientes;
+    return lista;
 }
 
-void liberar_clientes(Cliente *listaClientes) {
-    while (listaClientes) {
-        Cliente *prox = listaClientes->proximo;
-        free(listaClientes);
-        listaClientes = prox;
+void liberar_clientes(Cliente *lista) {
+    while (lista) {
+        Cliente *prox = lista->proximo;
+        free(lista);
+        lista = prox;
     }
 }
 
-/*  GESTÃO DE PRODUTOS */
+/* ================= PRODUTOS ================= */
 
 int codigoExiste(Produto *lista, int codigo) {
     while (lista) {
@@ -200,7 +190,8 @@ int codigoExiste(Produto *lista, int codigo) {
 }
 
 Produto* cadastrarProduto(Produto *lista) {
-    Produto *novo = (Produto*) malloc(sizeof(Produto));
+    Produto *novo = malloc(sizeof(Produto));
+    if (!novo) return lista;
 
     printf("\nNome do produto: ");
     ler_string(novo->nome, sizeof(novo->nome));
@@ -208,8 +199,9 @@ Produto* cadastrarProduto(Produto *lista) {
     do {
         printf("Codigo: ");
         scanf("%d", &novo->codigo);
+        limpar_buffer_entrada();
         if (codigoExiste(lista, novo->codigo))
-            printf("Codigo ja existe! Tente outro.\n");
+            printf("Codigo ja existe!\n");
     } while (codigoExiste(lista, novo->codigo));
 
     printf("Preco: ");
@@ -217,23 +209,21 @@ Produto* cadastrarProduto(Produto *lista) {
 
     printf("Quantidade: ");
     scanf("%d", &novo->quantidade);
-
     limpar_buffer_entrada();
 
     novo->prox = lista;
-    novo->proximo = NULL;
 
-    printf("Produto cadastrado!\n");
+    printf("Produto cadastrado com sucesso!\n");
     return novo;
 }
 
-
 void imprimirProdutos(Produto *lista) {
-    if (!lista) printf("\nNenhum produto em estoque.\n");
-    else {
-        printf("\n--- ESTOQUE DE PRODUTOS ---\n");
+    if (!lista) {
+        printf("\nNenhum produto cadastrado.\n");
+    } else {
+        printf("\n--- ESTOQUE ---\n");
         while (lista) {
-            printf("Cod: %d | Nome: %s | Preco: R$ %.2f | Qtd: %d\n", 
+            printf("Cod: %d | Nome: %s | Preco: %.2f | Qtd: %d\n",
                    lista->codigo, lista->nome, lista->preco, lista->quantidade);
             lista = lista->prox;
         }
@@ -251,25 +241,31 @@ Produto* buscarProduto(Produto *lista, int codigo) {
 
 Produto* removerProduto(Produto *lista, int codigo) {
     Produto *atual = lista, *ant = NULL;
+
     while (atual && atual->codigo != codigo) {
         ant = atual;
         atual = atual->prox;
     }
-    if (atual) {
+
+    if (!atual) {
+        printf("Produto nao encontrado.\n");
+    } else {
         if (!ant) lista = atual->prox;
         else ant->prox = atual->prox;
         free(atual);
-        printf("\nProduto removido com sucesso!\n");
-    } else printf("\nProduto nao encontrado.\n");
+        printf("Produto removido com sucesso!\n");
+    }
+
     return lista;
 }
 
-/*  GESTÃO DO CARRINHO */
+/* ================= CARRINHO ================= */
 
 void adicionar_carrinho(Compra **topo) {
     Compra *novo = malloc(sizeof(Compra));
+    if (!novo) return;
 
-    printf("\nNome do item: ");
+    printf("\nNome do produto: ");
     ler_string(novo->nome, sizeof(novo->nome));
 
     printf("Preco: ");
@@ -282,7 +278,7 @@ void adicionar_carrinho(Compra **topo) {
     novo->proximo = *topo;
     *topo = novo;
 
-    printf("Item adicionado ao carrinho!\n");
+    printf("Produto adicionado ao carrinho!\n");
 }
 
 void listar_carrinho(Compra *topo) {
@@ -305,266 +301,32 @@ void listar_carrinho(Compra *topo) {
 }
 
 void remover_carrinho(Compra **topo) {
-    char nome[100];
-
-    printf("\nDigite o nome do item para remover do carrinho: ");
+    char nome[50];
+    printf("\nNome do item para remover: ");
     ler_string(nome, sizeof(nome));
 
-    Compra *atual = *topo;
-    Compra *ant = NULL;
+    Compra *atual = *topo, *ant = NULL;
 
-    while (atual != NULL && strcmp(atual->nome, nome) != 0) {
+    while (atual && strcmp(atual->nome, nome) != 0) {
         ant = atual;
         atual = atual->proximo;
     }
 
-    if (atual != NULL) {
-        if (ant == NULL) {
-            *topo = atual->proximo;
-        } else {
-            ant->proximo = atual->proximo;
-        }
-        free(atual);
-        printf("Item removido do carrinho!\n");
+    if (!atual) {
+        printf("Item nao encontrado.\n");
     } else {
-        printf("Item nao encontrado no carrinho.\n");
+        if (!ant) *topo = atual->proximo;
+        else ant->proximo = atual->proximo;
+        free(atual);
+        printf("Item removido!\n");
     }
-
     pausar_tela();
 }
 
 void limpar_carrinho(Compra **topo) {
-    while (*topo != NULL) {
+    while (*topo) {
         Compra *prox = (*topo)->proximo;
         free(*topo);
         *topo = prox;
     }
-    *topo = NULL;
-}
-
-/*  MENUS DE NAVEGAÇÃO */
-
-void menu_clientes(Cliente **lista) {
-    int op;
-    char cpf[15];
-    Cliente *resultado;
-
-    do {
-        printf("\n--- GERENCIAMENTO DE CLIENTES ---");
-        printf("\n1. Cadastrar Cliente");
-        printf("\n2. Listar Clientes");
-        printf("\n3. Buscar Cliente");
-        printf("\n4. Editar Cliente");
-        printf("\n5. Remover Cliente");
-        printf("\n0. Voltar ao Menu Principal");
-        printf("\nEscolha: ");
-
-        if (scanf("%d", &op) != 1) {
-            limpar_buffer_entrada();
-            continue;
-        }
-        limpar_buffer_entrada();
-
-        switch (op) {
-            case 1:
-                *lista = cadastrar_cliente(*lista);
-                break;
-
-            case 2:
-                listar_clientes(*lista);
-                break;
-
-            case 3:
-                printf("Digite o CPF do cliente: ");
-                ler_string(cpf, sizeof(cpf));
-
-                resultado = buscar_cliente(*lista, cpf);
-                if (resultado != NULL) {
-                    printf("\nCPF: %s", resultado->cpf);
-                    printf("\nNome: %s", resultado->nome);
-                    printf("\nEmail: %s", resultado->email);
-                    printf("\nTelefone: %s\n", resultado->telefone);
-                } else {
-                    printf("\nCliente nao encontrado.\n");
-                }
-                pausar_tela();
-                break;
-
-            case 4:
-                editar_cliente(*lista);
-                break;
-
-            case 5:
-                *lista = remover_cliente(*lista);
-                break;
-        }
-
-    } while (op != 0);
-}
-
-
-void menu_produtos(Produto **lista) {
-    int op, cod;
-    Produto *p;
-
-    do {
-        printf("\n--- GERENCIAMENTO DE PRODUTOS ---");
-        printf("\n1. Cadastrar Produto");
-        printf("\n2. Listar Estoque");
-        printf("\n3. Buscar Produto");
-        printf("\n4. Editar Produto");
-        printf("\n5. Remover Produto");
-        printf("\n0. Voltar ao Menu Principal");
-        printf("\nEscolha: ");
-
-        if (scanf("%d", &op) != 1) {
-            limpar_buffer_entrada();
-            continue;
-        }
-        limpar_buffer_entrada();
-
-        switch(op) {
-
-        case 1:
-            *lista = cadastrarProduto(*lista);
-            break;
-
-        case 2:
-            imprimirProdutos(*lista);
-            pausar_tela();
-            break;
-
-        case 3: 
-            printf("Digite o codigo do produto: ");
-            if (scanf("%d", &cod) != 1) {
-                limpar_buffer_entrada();
-                break;
-            }
-            limpar_buffer_entrada();
-
-            p = buscarProduto(*lista, cod);
-            if (p) {
-                printf("\nCodigo: %d", p->codigo);
-                printf("\nNome: %s", p->nome);
-                printf("\nPreco: %.2f", p->preco);
-                printf("\nQuantidade: %d\n", p->quantidade);
-            } else {
-                printf("\nProduto nao encontrado.\n");
-            }
-            pausar_tela();
-            break;
-
-        case 4:  
-            printf("Digite o codigo do produto a editar: ");
-            if (scanf("%d", &cod) != 1) {
-                limpar_buffer_entrada();
-                break;
-            }
-            limpar_buffer_entrada();
-
-            p = buscarProduto(*lista, cod);
-            if (p) {
-                printf("\n--- DADOS ATUAIS ---");
-                printf("\nNome: %s", p->nome);
-                printf("\nPreco: %.2f", p->preco);
-                printf("\nQuantidade: %d\n", p->quantidade);
-
-                printf("\nNovo nome: ");
-                ler_string(p->nome, sizeof(p->nome));
-
-                printf("Novo preco: ");
-                scanf("%f", &p->preco);
-
-                printf("Nova quantidade: ");
-                scanf("%d", &p->quantidade);
-                limpar_buffer_entrada();
-
-                printf("\nProduto atualizado com sucesso!\n");
-            } else {
-                printf("\nProduto nao encontrado.\n");
-            }
-            pausar_tela();
-            break;
-
-        case 5:
-            printf("Digite o codigo do produto: ");
-            scanf("%d", &cod);
-            limpar_buffer_entrada();
-            *lista = removerProduto(*lista, cod);
-            pausar_tela();
-            break;
-        }
-
-    } while(op != 0);
-}
-
-
-void menu_carrinho(Compra **carrinho) {
-    int op;
-    do {
-        printf("\n--- CARRINHO ---");
-        printf("\n1. Adicionar");
-        printf("\n2. Listar");
-        printf("\n3. Remover");
-        printf("\n0. Finalizar");
-        printf("\nOpcao: ");
-
-        if (scanf("%d", &op) != 1) {
-            limpar_buffer_entrada();
-            continue;
-        }
-        limpar_buffer_entrada();
-
-        switch(op) {
-            case 1: adicionar_carrinho(carrinho); break;
-            case 2: listar_carrinho(*carrinho); break;
-            case 3: remover_carrinho(carrinho); break;
-            case 0: limpar_carrinho(carrinho); break;
-        }
-    } while (op != 0);
-}
-
-/* MAIN */
-
-int main() {
-    Cliente *lClientes = NULL;
-    Produto *lProdutos = NULL;
-    Compra *carrinho = NULL;
-    int op;
-
-    do {
-        printf("\n====================================");
-        printf("\n   SISTEMA DE GESTAO INTEGRADA");
-        printf("\n====================================");
-        printf("\n1. Gerenciamento de Clientes");
-        printf("\n2. Gerenciamento de Produtos");
-        printf("\n3. Carrinho de Compras");
-        printf("\n0. Sair do Sistema");
-        printf("\nEscolha uma opcao: ");
-        
-        if (scanf("%d", &op) != 1) {
-            limpar_buffer_entrada();
-            printf("Opcao invalida!\n");
-            continue;
-        }
-        limpar_buffer_entrada();
-
-        switch(op) {
-            case 1: menu_clientes(&lClientes); break;
-            case 2: menu_produtos(&lProdutos); break;
-            case 3: menu_carrinho(&carrinho); break;
-            case 0: printf("\nEncerrando o sistema...\n"); break;
-            default: printf("\nOpcao inexistente!\n"); pausar_tela();
-        }
-    } while(op != 0);
-
-    liberar_clientes(lClientes);
-    
-    while (lProdutos) {
-        Produto *p = lProdutos->prox;
-        free(lProdutos);
-        lProdutos = p;
-    }
-
-    return 0;
 }
